@@ -3,9 +3,9 @@ on:
   workflow_dispatch: #github页面手动触发
   push:
     tags:
-      - "v*.*"
+      - "v1.0"
 env:
-  IMAGE_NAME: test #这是您的镜像名
+  IMAGE_NAME: gpt4free #这是您的镜像名
 jobs:
   get-tags:
     runs-on: ubuntu-20.04
