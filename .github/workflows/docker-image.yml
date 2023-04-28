@@ -20,11 +20,12 @@ jobs:
       - name: Set image timezone to Asia/Shanghai
         run: sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
       - name: Build and Push Docker image
+        id: docker_build
         uses: docker/build-push-action@v2
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ github.ref }}
+          tags: ghcr.io/xmp2008/gpt4free:${{ github.ref }}
           dockerfile: ./Docker/Dockerfile
           build-args: |
             --build-arg TZ=Asia/Shanghai
