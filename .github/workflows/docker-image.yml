@@ -1,59 +1,32 @@
-name: ci
-
+name: Publish Docker Image
 on:
   push:
     tags:
-      - "v*.*"
+      - '*'
   workflow_dispatch:
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: gpt4free
-
 jobs:
-  get-tags:
-    runs-on: ubuntu-20.04
-    env:
-      TZ: Asia/Shanghai
-    outputs:
-      tags: ${{ steps.set-env-id.outputs.tags }}
+  publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    environment: production
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-      - name: Extract version number
-        id: set-env-id
-        run: |
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "${GITHUB_REF#refs/tags/v}" > version.txt
-          else
-            echo "edge" > version.txt
-          fi
-        shell: bash
-      - name: Set environment variable
-        run: |
-          echo "TAGS=$(cat version.txt)" >> $GITHUB_ENV
-        shell: bash
-
-  push-ghcr:
-    needs: get-tags
-    runs-on: ubuntu-20.04
-    env:
-      TZ: Asia/Shanghai
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-      - name: Login to registry
+      - uses: actions/checkout@v2
+      - name: Login to ghcr.io
         uses: docker/login-action@v1
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.PACKAGES_TOKEN }}
-      - name: Build and push image
+      - name: Set image timezone to Asia/Shanghai
+        run: |
+          echo "Asia/Shanghai" > /etc/timezone
+          dpkg-reconfigure -f noninteractive tzdata
+      - name: Build and Push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Docker/Dockerfile
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}:${{ github.ref }}
+          dockerfile: ./Docker/Dockerfile
+          build-args: |
+            --build-arg TZ=Asia/Shanghai
