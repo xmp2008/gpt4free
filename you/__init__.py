@@ -29,21 +29,19 @@ class Completion:
         client = Session(client_identifier='chrome_108')
         client.headers = Completion.__get_headers()
 
-        response = client.get(
-            f'https://you.com/api/streamingSearch',
-            params={
-                'q': prompt,
-                'page': page,
-                'count': count,
-                'safeSearch': safe_search,
-                'onShoppingPage': on_shopping_page,
-                'mkt': mkt,
-                'responseFilter': response_filter,
-                'domain': domain,
-                'queryTraceId': str(uuid4()) if query_trace_id is None else query_trace_id,
-                'chat': str(chat),  # {'question':'','answer':' ''}
-            },
-        )
+    response = client.get(f"https://you.com/api/streamingSearch", params = {
+            "q"              : prompt,
+            "page"           : page,
+            "count"          : count,
+            "safeSearch"     : safeSearch,
+            "onShoppingPage" : onShoppingpage,
+            "mkt"            : mkt,
+            "responseFilter" : responseFilter,
+            "domain"         : domain,
+            "queryTraceId"   : str(uuid4()) if queryTraceId is None else queryTraceId,
+            "chat"           : str(chat),  # {"question":"","answer":" '"}
+        }, proxy="http://10.0.0.2:7890"
+    )
 
         if debug:
             print('\n\n------------------\n\n')
