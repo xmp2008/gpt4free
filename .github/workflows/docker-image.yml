@@ -19,8 +19,8 @@ jobs:
           password: ${{ secrets.PACKAGES_TOKEN }}
       - name: Set image timezone to Asia/Shanghai
         run: |
-          echo "Asia/Shanghai" > /etc/timezone
-          dpkg-reconfigure -f noninteractive tzdata
+          sudo echo "Asia/Shanghai" > /etc/timezone
+          sudo dpkg-reconfigure -f noninteractive tzdata
       - name: Build and Push Docker image
         uses: docker/build-push-action@v2
         with:
