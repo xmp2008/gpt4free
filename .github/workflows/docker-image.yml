@@ -11,18 +11,20 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       TZ: Asia/Shanghai
-    outputs:
-      tags: ${{ steps.set-output-id.outputs.tags }}
     steps:
       - uses: actions/checkout@v2
-      - name: set-output
-        id: set-output-id
+      - name: Extract version number
+        id: get-version
         run: |
-          VERSION=edge
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "${GITHUB_REF#refs/tags/v}" > version.txt
+          else
+            echo "edge" > version.txt
           fi
-          echo ::set-output name=tags::${VERSION}          
+      - name: Set outputs
+        run: |
+          echo ::set-env name=TAGS::$(cat version.txt)
+        shell: bash        
   push-ghcr:
     runs-on: ubuntu-20.04
     env:
@@ -43,5 +45,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.tags }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.TAGS }}
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest   
