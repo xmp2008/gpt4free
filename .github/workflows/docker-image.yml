@@ -3,7 +3,7 @@ on:
   workflow_dispatch: #github页面手动触发
   push:
     tags:
-      - "v1.0"
+      - "v*.*"
 env:
   IMAGE_NAME: gpt4free #这是您的镜像名
 jobs:
