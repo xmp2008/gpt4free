@@ -40,8 +40,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Docker/Dockerfile
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.get-tags.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest   
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest  
